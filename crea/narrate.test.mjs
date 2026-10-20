@@ -6,7 +6,8 @@ import { check, claims, narrate, prompt } from "./narrate.mjs";
 
 const RESULT = {
   state: "open",
-  ledger_id: "rol_7a0c240d63fae197409ba84cd77e8f4eb3665bfbc30600812ed15580421e6dd5",
+  ledger_id:
+    "rol_7a0c240d63fae197409ba84cd77e8f4eb3665bfbc30600812ed15580421e6dd5",
   totals: { obligations: 3, required: 2, verified: 1, required_open: 1 },
   contradicted: [],
   residual_unknowns: ["u1"],
@@ -36,7 +37,8 @@ test("claims extracts numbers and REA ids", () => {
 });
 
 test("grounded narration is accepted", async () => {
-  reply = "El análisis sigue abierto: de 3 obligaciones, 2 son requeridas y solo 1 está verificada. Queda 1 incógnita.";
+  reply =
+    "El análisis sigue abierto: de 3 obligaciones, 2 son requeridas y solo 1 está verificada. Queda 1 incógnita.";
   const n = await narrate(RESULT, { host });
   assert.equal(n.ok, true, JSON.stringify(n));
   assert.equal(lastBody.stream, false);
@@ -62,7 +64,10 @@ test("invented id is rejected", () => {
 });
 
 test("non-local OLLAMA_HOST is refused", async () => {
-  await assert.rejects(narrate(RESULT, { host: "https://example.com" }), /must be local/);
+  await assert.rejects(
+    narrate(RESULT, { host: "https://example.com" }),
+    /must be local/,
+  );
 });
 
 test("prompt carries the JSON and the grounding rules", () => {

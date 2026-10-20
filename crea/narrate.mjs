@@ -28,8 +28,11 @@ export function prompt(result) {
 // Tokens that must be grounded in the source: numbers and REA-style IDs.
 export function claims(text) {
   const ids = text.match(/\b(?:ev|rol)_[0-9a-f]{8,}\b/g) ?? [];
-  const nums = (text.replace(/\b(?:ev|rol)_[0-9a-f]+\b/g, " ").match(/(?<![\w.])\d+(?:[.,]\d+)?(?![\w])/g) ?? [])
-    .map((n) => n.replace(",", "."));
+  const nums = (
+    text
+      .replace(/\b(?:ev|rol)_[0-9a-f]+\b/g, " ")
+      .match(/(?<![\w.])\d+(?:[.,]\d+)?(?![\w])/g) ?? []
+  ).map((n) => n.replace(",", "."));
   return { ids, nums };
 }
 
@@ -41,7 +44,8 @@ function sourceNumbers(value, out = new Set()) {
     out.add(value.toFixed(2));
   } else if (typeof value === "string") {
     // Whole numbers only: digits inside hex IDs (rol_7a0c…) do not count.
-    for (const n of value.match(/(?<![\w.])\d+(?:\.\d+)?(?![\w])/g) ?? []) out.add(n);
+    for (const n of value.match(/(?<![\w.])\d+(?:\.\d+)?(?![\w])/g) ?? [])
+      out.add(n);
   } else if (Array.isArray(value)) {
     out.add(String(value.length));
     for (const v of value) sourceNumbers(v, out);
@@ -56,11 +60,20 @@ export function check(narration, result) {
   const allowed = sourceNumbers(result);
   const { ids, nums } = claims(narration);
   const badIds = ids.filter((id) => !src.includes(id));
-  const badNums = nums.filter((n) => !allowed.has(n) && !allowed.has(String(Number(n))));
+  const badNums = nums.filter(
+    (n) => !allowed.has(n) && !allowed.has(String(Number(n))),
+  );
   return { ok: badIds.length === 0 && badNums.length === 0, badIds, badNums };
 }
 
-export async function narrate(result, { model = DEFAULT_MODEL, host = process.env.OLLAMA_HOST ?? "http://127.0.0.1:11434", fetchImpl = fetch } = {}) {
+export async function narrate(
+  result,
+  {
+    model = DEFAULT_MODEL,
+    host = process.env.OLLAMA_HOST ?? "http://127.0.0.1:11434",
+    fetchImpl = fetch,
+  } = {},
+) {
   const url = new URL("/api/generate", host);
   if (!["127.0.0.1", "localhost", "[::1]"].includes(url.hostname)) {
     throw new Error(`OLLAMA_HOST must be local, got ${url.hostname}`);
@@ -68,7 +81,12 @@ export async function narrate(result, { model = DEFAULT_MODEL, host = process.en
   const res = await fetchImpl(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ model, prompt: prompt(result), stream: false, options: { temperature: 0.2, num_ctx: 2048 } }),
+    body: JSON.stringify({
+      model,
+      prompt: prompt(result),
+      stream: false,
+      options: { temperature: 0.2, num_ctx: 2048 },
+    }),
   });
   if (!res.ok) throw new Error(`Ollama respondió ${res.status}`);
   const data = await res.json();
@@ -80,17 +98,23 @@ async function main(argv) {
   const file = argv.find((a) => !a.startsWith("--"));
   const mi = argv.indexOf("--model");
   if (!file) {
-    process.stderr.write("usage: node crea/narrate.mjs result.json [--model NAME]\n");
+    process.stderr.write(
+      "usage: node crea/narrate.mjs result.json [--model NAME]\n",
+    );
     return 3;
   }
   const result = JSON.parse(readFileSync(file, "utf8"));
   try {
-    const n = await narrate(result, { model: mi > -1 ? argv[mi + 1] : DEFAULT_MODEL });
+    const n = await narrate(result, {
+      model: mi > -1 ? argv[mi + 1] : DEFAULT_MODEL,
+    });
     if (n.ok) {
       process.stdout.write(`${n.text}\n`);
       return 0;
     }
-    process.stderr.write(`crea narrate: narración rechazada; menciona datos que no están en el resultado (${[...n.badIds, ...n.badNums].join(", ")}).\n`);
+    process.stderr.write(
+      `crea narrate: narración rechazada; menciona datos que no están en el resultado (${[...n.badIds, ...n.badNums].join(", ")}).\n`,
+    );
   } catch (e) {
     process.stderr.write(`crea narrate: sin narración (${e.message}).\n`);
   }
@@ -98,6 +122,9 @@ async function main(argv) {
   return 1;
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   main(process.argv.slice(2)).then((code) => process.exit(code));
 }

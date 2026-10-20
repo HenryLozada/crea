@@ -10,16 +10,16 @@ python3 crea/music/analyze.py cancion.mp3 --json
 
 ## Qué mide
 
-| Salida | Cómo se obtiene |
-|---|---|
-| Tonalidad | Perfiles Krumhansl-Kessler sobre el croma, reordenados con evidencia de centro tonal: tiempo como raíz, acordes inicial y final, y calidad del acorde de tónica |
-| Modo (hipótesis) | Qué modo eclesiástico sobre la tónica explica mejor la energía de cada nota |
-| Acordes | Plantillas (tríadas, 7, maj7, m7, dim, sus2, sus4) sobre croma CQT sincronizado al pulso |
-| Grados y campo armónico | Números romanos y acordes diatónicos con séptima de la tonalidad |
-| Fuera de tonalidad | Cada acorde ajeno lleva una hipótesis: dominante secundaria, intercambio modal o cromático |
-| Bajo | La nota más fuerte entre E1 y E3 en cada acorde |
-| Melodía | La voz predominante por cuadro (E3–C7), con los armónicos limitados por la energía de su fundamental |
-| MIDI | Pistas separadas de melodía, bajo y acordes |
+| Salida                  | Cómo se obtiene                                                                                                                                                 |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tonalidad               | Perfiles Krumhansl-Kessler sobre el croma, reordenados con evidencia de centro tonal: tiempo como raíz, acordes inicial y final, y calidad del acorde de tónica |
+| Modo (hipótesis)        | Qué modo eclesiástico sobre la tónica explica mejor la energía de cada nota                                                                                     |
+| Acordes                 | Plantillas (tríadas, 7, maj7, m7, dim, sus2, sus4) sobre croma CQT sincronizado al pulso                                                                        |
+| Grados y campo armónico | Números romanos y acordes diatónicos con séptima de la tonalidad                                                                                                |
+| Fuera de tonalidad      | Cada acorde ajeno lleva una hipótesis: dominante secundaria, intercambio modal o cromático                                                                      |
+| Bajo                    | La nota más fuerte entre E1 y E3 en cada acorde                                                                                                                 |
+| Melodía                 | La voz predominante por cuadro (E3–C7), con los armónicos limitados por la energía de su fundamental                                                            |
+| MIDI                    | Pistas separadas de melodía, bajo y acordes                                                                                                                     |
 
 ## Lo que no hace (todavía)
 

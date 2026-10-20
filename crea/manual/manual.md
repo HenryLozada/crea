@@ -42,11 +42,11 @@ Si ambos terminan sin errores, la base está sana.
 
 El corazón de cREA es `crea verify`. Le das el resultado de un análisis y te responde una de tres cosas.
 
-| Estado | Qué significa | Código de salida |
-|---|---|---|
-| **verified** | Cada afirmación requerida tiene dueño, casos de prueba y un verificador que pasó. | 0 |
-| **open** | Hay afirmaciones sin probar. Puede ser trabajo pendiente o falta de evidencia. | 1 |
-| **contradicted** | La evidencia se contradice. Alguna conclusión está mal. | 2 |
+| Estado           | Qué significa                                                                     | Código de salida |
+| ---------------- | --------------------------------------------------------------------------------- | ---------------- |
+| **verified**     | Cada afirmación requerida tiene dueño, casos de prueba y un verificador que pasó. | 0                |
+| **open**         | Hay afirmaciones sin probar. Puede ser trabajo pendiente o falta de evidencia.    | 1                |
+| **contradicted** | La evidencia se contradice. Alguna conclusión está mal.                           | 2                |
 
 ```bash
 node crea/verify.mjs crea/examples/empty-request.json
@@ -78,12 +78,12 @@ Abre `http://127.0.0.1:4173` en tu navegador. Arrastra un archivo `.json` o prue
 
 Un veredicto trae cuatro listas. Cada una responde una pregunta distinta.
 
-| Lista | La pregunta que responde |
-|---|---|
-| Contradichas | ¿Dónde se contradice la evidencia? |
-| Sin dueño | ¿Qué afirmación no tiene un responsable claro en el código? |
-| Sin verificador | ¿Qué afirmación nadie ha comprobado? |
-| Incógnitas residuales | ¿Qué sigue sin saberse? Aquí suelen esconderse las fugas. |
+| Lista                 | La pregunta que responde                                    |
+| --------------------- | ----------------------------------------------------------- |
+| Contradichas          | ¿Dónde se contradice la evidencia?                          |
+| Sin dueño             | ¿Qué afirmación no tiene un responsable claro en el código? |
+| Sin verificador       | ¿Qué afirmación nadie ha comprobado?                        |
+| Incógnitas residuales | ¿Qué sigue sin saberse? Aquí suelen esconderse las fugas.   |
 
 Al final aparecen los **límites declarados por REA**. Léelos siempre: dicen lo que el análisis no pudo ver.
 
@@ -101,14 +101,14 @@ Avanza por niveles. Cada uno se apoya en el anterior.
 
 ## Glosario
 
-| Término | Significado |
-|---|---|
-| Evidencia | Registro de una observación, con su origen, su autoridad y sus límites. |
-| Ledger de obligaciones | Lista de afirmaciones a probar, derivada de la evidencia. |
-| Obligación | Una afirmación concreta, por ejemplo "este comando acepta tal opción". |
-| Manifiesto | Dice quién es dueño de cada obligación y cómo se verifica. |
-| Incógnita residual | Algo que el análisis no pudo determinar. |
-| Determinista | Mismo input, mismo resultado, siempre. Sin azar ni modelo. |
+| Término                | Significado                                                             |
+| ---------------------- | ----------------------------------------------------------------------- |
+| Evidencia              | Registro de una observación, con su origen, su autoridad y sus límites. |
+| Ledger de obligaciones | Lista de afirmaciones a probar, derivada de la evidencia.               |
+| Obligación             | Una afirmación concreta, por ejemplo "este comando acepta tal opción".  |
+| Manifiesto             | Dice quién es dueño de cada obligación y cómo se verifica.              |
+| Incógnita residual     | Algo que el análisis no pudo determinar.                                |
+| Determinista           | Mismo input, mismo resultado, siempre. Sin azar ni modelo.              |
 
 ## Uso responsable
 

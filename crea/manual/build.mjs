@@ -36,7 +36,9 @@ async function findFont(dir, file) {
     try {
       const p = join(dir, sub, file);
       return await readFile(p);
-    } catch { /* keep looking */ }
+    } catch {
+      /* keep looking */
+    }
   }
   return null;
 }
@@ -48,7 +50,10 @@ async function fontCss(dir) {
   const rules = [];
   for (const [family, weight, style, file] of FACES) {
     const buf = await findFont(dir, file);
-    if (buf) rules.push(`@font-face{font-family:"${family}";font-weight:${weight};font-style:${style};src:url(data:font/woff2;base64,${buf.toString("base64")}) format("woff2");}`);
+    if (buf)
+      rules.push(
+        `@font-face{font-family:"${family}";font-weight:${weight};font-style:${style};src:url(data:font/woff2;base64,${buf.toString("base64")}) format("woff2");}`,
+      );
   }
   return rules.join("\n");
 }
@@ -57,28 +62,42 @@ async function fontCss(dir) {
 export function chapters(html) {
   const parts = html.split(/(?=<h2 )/);
   const lead = parts[0].startsWith("<h2 ") ? "" : parts.shift();
-  return lead + parts.map((p, n) =>
-    `<section class="chapter" style="--accent:${ACCENTS[n % ACCENTS.length]}"><div class="chapter-num">${String(n + 1).padStart(2, "0")}</div>${p}</section>`,
-  ).join("\n");
+  return (
+    lead +
+    parts
+      .map(
+        (p, n) =>
+          `<section class="chapter" style="--accent:${ACCENTS[n % ACCENTS.length]}"><div class="chapter-num">${String(n + 1).padStart(2, "0")}</div>${p}</section>`,
+      )
+      .join("\n")
+  );
 }
 
 export function toc(headings) {
   let n = 0;
-  const items = headings.filter((h) => h.level === 2 || h.level === 3).map((h) => {
-    if (h.level === 2) n++;
-    const accent = ACCENTS[(n - 1) % ACCENTS.length];
-    return h.level === 2
-      ? `<li class="toc-2" style="--accent:${accent}"><a href="#${h.id}"><span class="toc-n">${String(n).padStart(2, "0")}</span>${h.text}</a></li>`
-      : `<li class="toc-3"><a href="#${h.id}">${h.text}</a></li>`;
-  });
+  const items = headings
+    .filter((h) => h.level === 2 || h.level === 3)
+    .map((h) => {
+      if (h.level === 2) n++;
+      const accent = ACCENTS[(n - 1) % ACCENTS.length];
+      return h.level === 2
+        ? `<li class="toc-2" style="--accent:${accent}"><a href="#${h.id}"><span class="toc-n">${String(n).padStart(2, "0")}</span>${h.text}</a></li>`
+        : `<li class="toc-3"><a href="#${h.id}">${h.text}</a></li>`;
+    });
   return `<nav class="toc"><h2 class="toc-title">Índice</h2><ol>${items.join("")}</ol></nav>`;
 }
 
-export async function renderHtml(src, { fontsDir = null, date = new Date() } = {}) {
+export async function renderHtml(
+  src,
+  { fontsDir = null, date = new Date() } = {},
+) {
   const { html, headings } = markdown(src);
   const title = headings.find((h) => h.level === 1)?.text ?? "Manual";
   const body = chapters(html.replace(/<h1 [^>]*>.*?<\/h1>\n?/, ""));
-  const when = date.toLocaleDateString("es-MX", { year: "numeric", month: "long" });
+  const when = date.toLocaleDateString("es-MX", {
+    year: "numeric",
+    month: "long",
+  });
   return `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${title}</title><style>
 ${await fontCss(fontsDir)}
 @page { size: A4; margin: 22mm 20mm 24mm; }
@@ -137,7 +156,11 @@ async function launch(chromiumPath) {
   const { chromium } = await import("playwright-core");
   const path = chromiumPath ?? process.env.CREA_CHROMIUM;
   if (path) return chromium.launch({ executablePath: path });
-  try { return await chromium.launch({ channel: "chrome" }); } catch { return chromium.launch(); }
+  try {
+    return await chromium.launch({ channel: "chrome" });
+  } catch {
+    return chromium.launch();
+  }
 }
 
 export async function buildPdf(html, outPath, chromiumPath = null) {
@@ -161,10 +184,15 @@ export async function buildPdf(html, outPath, chromiumPath = null) {
   }
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   const input = resolve(arg("--in", join(HERE, "manual.md")));
   const out = resolve(arg("--out", join(HERE, "out/cREA-manual.pdf")));
-  const html = await renderHtml(await readFile(input, "utf8"), { fontsDir: arg("--fonts") });
+  const html = await renderHtml(await readFile(input, "utf8"), {
+    fontsDir: arg("--fonts"),
+  });
   if (process.argv.includes("--html")) {
     await mkdir(dirname(out), { recursive: true });
     await writeFile(out.replace(/\.pdf$/, ".html"), html);

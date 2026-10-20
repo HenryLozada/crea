@@ -11,7 +11,19 @@ before(async () => {
 });
 after(() => new Promise((ok) => server.close(ok)));
 
-const EMPTY = { evidence_bundle: { artifacts: [], providers: [], environments: [], scenarios: [], captures: [], unknowns: [], records: [] }, reviewed_obligations: [], manifest: { bindings: [], contradictions: [] } };
+const EMPTY = {
+  evidence_bundle: {
+    artifacts: [],
+    providers: [],
+    environments: [],
+    scenarios: [],
+    captures: [],
+    unknowns: [],
+    records: [],
+  },
+  reviewed_obligations: [],
+  manifest: { bindings: [], contradictions: [] },
+};
 
 test("serves the page", async () => {
   const r = await fetch(`${base}/`);
@@ -27,7 +39,10 @@ test("capabilities separate real from roadmap", async () => {
 });
 
 test("verify: empty request through the real REA CLI is open", async () => {
-  const r = await fetch(`${base}/api/verify`, { method: "POST", body: JSON.stringify(EMPTY) });
+  const r = await fetch(`${base}/api/verify`, {
+    method: "POST",
+    body: JSON.stringify(EMPTY),
+  });
   assert.equal(r.status, 200);
   const v = await r.json();
   assert.equal(v.state, "open");
@@ -35,12 +50,18 @@ test("verify: empty request through the real REA CLI is open", async () => {
 });
 
 test("verify: invalid JSON is 400", async () => {
-  const r = await fetch(`${base}/api/verify`, { method: "POST", body: "{nope" });
+  const r = await fetch(`${base}/api/verify`, {
+    method: "POST",
+    body: "{nope",
+  });
   assert.equal(r.status, 400);
 });
 
 test("verify: wrong shape is 422", async () => {
-  const r = await fetch(`${base}/api/verify`, { method: "POST", body: JSON.stringify({ foo: 1 }) });
+  const r = await fetch(`${base}/api/verify`, {
+    method: "POST",
+    body: JSON.stringify({ foo: 1 }),
+  });
   assert.equal(r.status, 422);
 });
 

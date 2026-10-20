@@ -42,15 +42,15 @@ Cuando Ollama quite su runner CUDA 12, Pascal se queda sin GPU en Ollama. Hoy no
 
 ## Ajuste para tu equipo
 
-| Ajuste | Valor | Por qué |
-|---|---|---|
-| Modelo | 3–4B, Q4_K_M | Deja ~1.5 GB de VRAM para el escritorio de Windows y el contexto |
-| Contexto (`num_ctx`) | 2048, subir a 4096 si no falla | El contexto largo come 1–2 GB extra de VRAM |
-| `OLLAMA_NUM_PARALLEL` | 1 | Una petición a la vez; con 4 GB no hay espacio para dos |
-| `OLLAMA_MAX_LOADED_MODELS` | 1 | Evita que dos modelos se peleen la VRAM |
-| Hilos de CPU (`num_thread`) | empezar en 4, comparar con 8 | 4 = núcleos físicos del 7700HQ; en inferencia suele rendir igual o mejor que usar los 8 hilos, pero mídelo |
-| Energía | Conectado a corriente, perfil de alto rendimiento | Las laptops suelen limitar la GPU con batería |
-| Juegos / DAW abiertos | Ciérralos | Comparten la misma VRAM |
+| Ajuste                      | Valor                                             | Por qué                                                                                                    |
+| --------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Modelo                      | 3–4B, Q4_K_M                                      | Deja ~1.5 GB de VRAM para el escritorio de Windows y el contexto                                           |
+| Contexto (`num_ctx`)        | 2048, subir a 4096 si no falla                    | El contexto largo come 1–2 GB extra de VRAM                                                                |
+| `OLLAMA_NUM_PARALLEL`       | 1                                                 | Una petición a la vez; con 4 GB no hay espacio para dos                                                    |
+| `OLLAMA_MAX_LOADED_MODELS`  | 1                                                 | Evita que dos modelos se peleen la VRAM                                                                    |
+| Hilos de CPU (`num_thread`) | empezar en 4, comparar con 8                      | 4 = núcleos físicos del 7700HQ; en inferencia suele rendir igual o mejor que usar los 8 hilos, pero mídelo |
+| Energía                     | Conectado a corriente, perfil de alto rendimiento | Las laptops suelen limitar la GPU con batería                                                              |
+| Juegos / DAW abiertos       | Ciérralos                                         | Comparten la misma VRAM                                                                                    |
 
 Variables de entorno en PowerShell (persisten para tu usuario):
 
