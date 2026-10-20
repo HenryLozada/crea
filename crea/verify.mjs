@@ -49,19 +49,28 @@ export function toRequest(input) {
   throw new Error("input is neither a ledger request nor an evidence bundle");
 }
 
-function runLedger(request) {
+export function runLedger(request) {
   const res = spawnSync(
     process.execPath,
     [REA, "build-reconstruction-obligation-ledger", JSON.stringify(request), "--json"],
     { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 },
   );
-  if (res.error) fail(`could not start REA: ${res.error.message}`);
-  if (res.status !== 0) fail(`REA exited ${res.status}: ${(res.stderr || res.stdout).trim()}`);
+  if (res.error) throw new Error(`could not start REA: ${res.error.message}`);
+  if (res.status !== 0) throw new Error(`REA exited ${res.status}: ${(res.stderr || res.stdout).trim()}`);
   try {
     return JSON.parse(res.stdout);
   } catch {
-    fail("REA output was not JSON");
+    throw new Error("REA output was not JSON");
   }
+}
+
+// Accepts a ledger request, a bare evidence bundle, or an existing ledger
+// output, and returns the condensed verdict. Throws on invalid input.
+export function verifyInput(input) {
+  const isLedger = input?.schema === "ReconstructionObligationLedger"
+    || input?.normalized_result?.schema === "ReconstructionObligationLedger";
+  const envelope = isLedger ? input : runLedger(toRequest(input));
+  return verdict(ledgerOf(envelope), envelope?.normalized_result ? envelope : null);
 }
 
 // Accept either the Evidence envelope or the bare normalized ledger.
@@ -152,9 +161,7 @@ function main(argv) {
     envelope = JSON.parse(readFileSync(args[1], "utf8"));
   } else if (args[0]) {
     const input = JSON.parse(readFileSync(args[0], "utf8"));
-    let request;
-    try { request = toRequest(input); } catch (e) { fail(e.message); }
-    envelope = runLedger(request);
+    try { envelope = runLedger(toRequest(input)); } catch (e) { fail(e.message); }
   } else {
     fail("usage: node crea/verify.mjs <request.json> | --ledger <out.json> [--json]");
   }
