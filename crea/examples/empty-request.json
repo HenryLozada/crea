@@ -1,0 +1,16 @@
+{
+  "evidence_bundle": {
+    "artifacts": [],
+    "providers": [],
+    "environments": [],
+    "scenarios": [],
+    "captures": [],
+    "unknowns": [],
+    "records": []
+  },
+  "reviewed_obligations": [],
+  "manifest": {
+    "bindings": [],
+    "contradictions": []
+  }
+}
