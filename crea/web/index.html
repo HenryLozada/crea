@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cREA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0a17; --panel: #151024; --line: rgba(203,162,74,.28);
+  --sol: #cba24a; --luna: #cbd3dc; --dim: rgba(203,211,220,.7);
+  --ok: #8fc9a3; --open: #e3c074; --bad: #ef9585;
+  --serif: "EB Garamond", Georgia, serif; --caps: "Cinzel", "Times New Roman", serif;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f2ecdd; --panel: #fbf7ee; --line: rgba(120,90,30,.3);
+    --sol: #8a6516; --luna: #1b1626; --dim: rgba(27,22,38,.7);
+    --ok: #2f7a4b; --open: #8a6516; --bad: #a33b2b;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--luna); font-family: var(--serif); font-size: 18px; line-height: 1.55; }
+.wrap { max-width: 1000px; margin: 0 auto; padding: 32px 16px 72px; }
+header { display: flex; align-items: baseline; gap: 14px; }
+.mark { font-family: var(--caps); font-size: 36px; color: var(--sol); line-height: 1; }
+.brand { font-family: var(--caps); letter-spacing: .3em; font-size: 15px; }
+.tag { font-style: italic; color: var(--dim); font-size: 15px; }
+h1 { font-family: var(--caps); font-weight: 400; letter-spacing: .06em; font-size: clamp(28px, 5vw, 44px); line-height: 1.15; margin: 48px 0 10px; }
+.lead { color: var(--dim); max-width: 60ch; margin: 0 0 28px; }
+h2 { font-family: var(--caps); font-weight: 400; letter-spacing: .2em; font-size: 15px; margin: 48px 0 14px; color: var(--sol); }
+.drop { border: 1px dashed var(--line); border-radius: 14px; background: var(--panel); padding: 28px; text-align: center; transition: border-color .2s; }
+.drop.over { border-color: var(--sol); }
+.drop p { margin: 0 0 16px; color: var(--dim); }
+.row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+button, .file { font: inherit; font-size: 16px; min-height: 44px; padding: 10px 18px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--luna); cursor: pointer; }
+button.primary { background: var(--sol); color: var(--bg); border-color: var(--sol); }
+button:focus-visible, .file:focus-within { outline: 2px solid var(--sol); outline-offset: 2px; }
+.file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.file { position: relative; display: inline-flex; align-items: center; }
+.result { margin-top: 20px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 22px; display: none; }
+.result.show { display: block; }
+.state { font-family: var(--caps); letter-spacing: .14em; font-size: 22px; }
+.state.verified { color: var(--ok); } .state.open { color: var(--open); } .state.contradicted { color: var(--bad); } .state.error { color: var(--bad); }
+.line { margin: 6px 0 18px; font-style: italic; color: var(--dim); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+@media (max-width: 600px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.stat { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.stat b { display: block; font-family: var(--caps); font-size: 24px; font-weight: 400; }
+.stat span { font-size: 14px; color: var(--dim); }
+.ids { font-size: 15px; margin: 0 0 12px; }
+.ids ul { margin: 4px 0 0; padding-left: 18px; }
+code, .mono { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 13px; word-break: break-all; }
+.meta { color: var(--dim); font-size: 14px; margin-top: 14px; }
+.caps { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.cap { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: var(--panel); }
+.cap .name { font-weight: 500; }
+.cap .detail { font-size: 15px; color: var(--dim); }
+.pill { display: inline-block; font-family: var(--caps); font-size: 11px; letter-spacing: .14em; padding: 2px 8px; border-radius: 99px; margin-bottom: 6px; border: 1px solid currentColor; }
+.pill.real { color: var(--ok); } .pill.roadmap { color: var(--dim); }
+footer { margin-top: 56px; color: var(--dim); font-size: 14px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="mark" aria-hidden="true">Æ</span>
+    <span class="brand">cREA</span>
+    <span class="tag">reverse engineer anything · then create</span>
+  </header>
+
+  <h1>¿Lo que te dijo el análisis es verdad?</h1>
+  <p class="lead">Suelta aquí la salida de un análisis de REA y cREA te dice qué está probado, qué sigue abierto y dónde hay contradicción. Sin modelo, sin adivinar: solo lo que la evidencia sostiene.</p>
+
+  <section aria-labelledby="verify-h">
+    <h2 id="verify-h">VERIFICAR</h2>
+    <div class="drop" id="drop">
+      <p>Arrastra un <code>.json</code> (solicitud de ledger, bundle de evidencia o ledger ya generado).</p>
+      <div class="row">
+        <label class="file">Elegir archivo<input type="file" id="file" accept=".json,application/json"></label>
+        <button type="button" class="primary" id="sample">Probar con un ejemplo vacío</button>
+      </div>
+    </div>
+    <div class="result" id="result" aria-live="polite">
+      <div class="state" id="state"></div>
+      <div class="line" id="line"></div>
+      <div class="stats" id="stats"></div>
+      <div id="lists"></div>
+      <div class="meta" id="meta"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="caps-h">
+    <h2 id="caps-h">QUÉ PUEDE HACER — Y QUÉ TODAVÍA NO</h2>
+    <div class="caps" id="caps"></div>
+  </section>
+
+  <footer>cREA corre solo en tu máquina (127.0.0.1). Nada sale de aquí.</footer>
+</div>
+
+<script>
+const LINES = {
+  verified: "Cerrado. Cada afirmación requerida tiene dueño, casos y verificador.",
+  open: "Abierto. Hay afirmaciones sin probar. Lo que no tiene evidencia no existe todavía.",
+  contradicted: "Contradicción. La evidencia se niega a sí misma. Aquí alguien alucinó.",
+};
+const EMPTY = { evidence_bundle: { artifacts: [], providers: [], environments: [], scenarios: [], captures: [], unknowns: [], records: [] }, reviewed_obligations: [], manifest: { bindings: [], contradictions: [] } };
+const $ = (id) => document.getElementById(id);
+const el = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids); return n; };
+
+function show(v) {
+  const r = $("result"); r.classList.add("show");
+  $("state").className = "state " + v.state;
+  $("state").textContent = v.state.toUpperCase();
+  $("line").textContent = LINES[v.state];
+  const t = v.totals;
+  $("stats").replaceChildren(...[["obligaciones", t.obligations], ["requeridas", t.required], ["verificadas", t.verified], ["abiertas", t.required_open]]
+    .map(([k, n]) => el("div", { className: "stat" }, el("b", { textContent: String(n) }), el("span", { textContent: k }))));
+  const groups = [["Contradichas (alucinación)", v.contradicted], ["Sin dueño", v.missing_owner], ["Sin verificador", v.missing_verifier], ["Incógnitas residuales (riesgo de fuga)", v.residual_unknowns]];
+  $("lists").replaceChildren(...groups.map(([title, ids]) => {
+    const d = el("div", { className: "ids" }, el("strong", { textContent: `${title}: ${ids.length}` }));
+    if (ids.length) d.append(el("ul", {}, ...ids.slice(0, 50).map((id) => el("li", {}, el("code", { textContent: id })))));
+    return d;
+  }));
+  const meta = [`ledger ${v.ledger_id}`, `estado REA: ${v.ledger_status}`, ...v.limitations.map((l) => `límite: ${l}`)];
+  $("meta").replaceChildren(...meta.map((m) => el("div", { className: "mono", textContent: m })));
+}
+function showError(msg) {
+  $("result").classList.add("show");
+  $("state").className = "state error"; $("state").textContent = "NO SE PUDO VERIFICAR";
+  $("line").textContent = msg; $("stats").replaceChildren(); $("lists").replaceChildren(); $("meta").replaceChildren();
+}
+async function verify(body) {
+  $("state").textContent = "…";
+  try {
+    const res = await fetch("/api/verify", { method: "POST", headers: { "content-type": "application/json" }, body });
+    const data = await res.json();
+    res.ok ? show(data) : showError(data.error || `error ${res.status}`);
+  } catch (e) { showError(e.message); }
+}
+const readFile = (f) => f && f.text().then(verify);
+$("file").addEventListener("change", (e) => readFile(e.target.files[0]));
+$("sample").addEventListener("click", () => verify(JSON.stringify(EMPTY)));
+const drop = $("drop");
+drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", (e) => { e.preventDefault(); drop.classList.remove("over"); readFile(e.dataTransfer.files[0]); });
+
+fetch("/api/capabilities").then((r) => r.json()).then((caps) => {
+  $("caps").replaceChildren(...caps.map((c) => el("div", { className: "cap" },
+    el("span", { className: "pill " + c.status, textContent: c.status === "real" ? "REAL HOY" : "EN CAMINO" }),
+    el("div", { className: "name", textContent: c.name }),
+    el("div", { className: "detail", textContent: c.detail }))));
+});
+</script>
+</body>
+</html>
